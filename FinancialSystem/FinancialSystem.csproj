@@ -16,8 +16,6 @@
 
     <ItemGroup>
       <Folder Include="Application\" />
-      <Folder Include="Core\Entities\" />
-      <Folder Include="Core\Enums\" />
       <Folder Include="Core\Exceptions\" />
       <Folder Include="Core\Interfaces\" />
       <Folder Include="Infrastructure\" />
