@@ -8,6 +8,6 @@ public abstract class User
     public string IdentificationNumber { get; set; } = string.Empty;
     public string PhoneNumber { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
-    public List<Account> Accounts { get; set; } = new();
+    public List<AccountBase> Accounts { get; set; } = new();
 
 }
