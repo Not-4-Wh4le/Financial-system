@@ -1,6 +1,7 @@
-﻿using FinancialSystem.Core.Interfaces;
+﻿using FinancialSystem.Core.Entities;
+using FinancialSystem.Core.Interfaces;
 
-namespace FinancialSystem.Core.Entities;
+namespace FinancialSystem.Core.Patterns;
 
 public class TransferCommand : ITransactionCommand
 {

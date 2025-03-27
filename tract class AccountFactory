@@ -1,0 +1,29 @@
+[33mcommit 5051088f90060dcb2e4e64763258094ea6abb2be[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m
+Author: notawhale <notawh4le@gmail.com>
+Date:   Thu Mar 27 15:23:34 2025 +0300
+
+    Добавлен паттерн Command для переводов
+
+[33mcommit 8d4d871b70d02437a3c86c6702ea79af74a37a33[m
+Author: notawhale <notawh4le@gmail.com>
+Date:   Thu Mar 27 13:31:35 2025 +0300
+
+    Доработка основных классов
+
+[33mcommit ca5357050119a9f55afed5b97c8b5bce428e9709[m
+Author: notawhale <notawh4le@gmail.com>
+Date:   Tue Mar 25 04:19:24 2025 +0300
+
+    Добавлены интерфейсы для базовых сущностей FinancialSystem/Core/Interface
+
+[33mcommit ae095a6ad954aec3efac2b67184b175967ac8503[m
+Author: notawhale <notawh4le@gmail.com>
+Date:   Tue Mar 25 03:59:50 2025 +0300
+
+    Добавлены базовые сущности и перечисления
+
+[33mcommit 830e6e7e1fdd8a919786ab17a82dda771e10b399[m
+Author: notawhale <notawh4le@gmail.com>
+Date:   Tue Mar 25 02:56:49 2025 +0300
+
+    Первый коммит
