@@ -8,6 +8,7 @@ public abstract class User
     public string IdentificationNumber { get; set; } = string.Empty;
     public string PhoneNumber { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
+    public bool IsForeigner { get; set; } = false;
     public List<AccountBase> Accounts { get; set; } = new();
 
 }

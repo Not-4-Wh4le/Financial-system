@@ -17,7 +17,11 @@
     <ItemGroup>
       <Folder Include="Application\" />
       <Folder Include="Core\Exceptions\" />
-      <Folder Include="Infrastructure\" />
+      <Folder Include="Infrastructure\Repositories\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="System.Data.SQLite" Version="1.0.119" />
     </ItemGroup>
 
 </Project>
