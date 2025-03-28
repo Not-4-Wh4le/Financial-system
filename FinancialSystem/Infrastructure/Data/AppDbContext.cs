@@ -1,4 +1,4 @@
-﻿using System.Data.Entity;
+﻿using Microsoft.EntityFrameworkCore;
 using FinancialSystem.Core.Entities;
 
 namespace FinancialSystem.Infrastructure.Data;
@@ -10,6 +10,6 @@ public class AppDbContext : DbContext
     public DbSet<Bank> Banks { get; set; }
     public DbSet<Loan> Loans { get; set; }
     public DbSet<AccountBase> Accounts { get; set; }
-    
-    
+
+    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) {}
 }

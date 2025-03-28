@@ -20,7 +20,12 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="System.Data.SQLite" Version="1.0.119" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.14" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.14" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.14">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
     </ItemGroup>
 
 </Project>
