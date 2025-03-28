@@ -10,7 +10,7 @@ public class Client : User, IBankClient
         set => this.ID = value; 
     }
     
-    public string Name 
+    public string Name
     { 
         get => this.FullName; 
         set => this.FullName = value; 
