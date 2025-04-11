@@ -2,11 +2,10 @@
 
 namespace FinancialSystem.Core.Interfaces.Repository;
 
-public interface IAccountRepository
+public interface IAccountRepository : IRepository<AccountBase>
 {
-    Task<AccountBase> GetAccountByIdAsync(int id);
     Task<List<AccountBase>> GetAccountsByUserAsync(int userId);
-    Task AddAccountAsync(AccountBase account);
-    Task UpdateAccountAsync(AccountBase account);
+    Task<List<AccountBase>> GetAccountsByEnterpriseAsync(int enterpriseId);
     Task FreezeAccountAsync(int accountId);
+    Task UnfreezeAccountAsync(int accountId);
 }
