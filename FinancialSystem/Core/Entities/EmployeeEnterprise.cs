@@ -1,4 +1,6 @@
-﻿namespace FinancialSystem.Core.Entities;
+﻿using FinancialSystem.Core.Enums;
+
+namespace FinancialSystem.Core.Entities;
 
 public class EmployeeEnterprise
 {
@@ -7,4 +9,5 @@ public class EmployeeEnterprise
     
     public int EnterpriseId { get; set; }
     public Enterprise Enterprise { get; set; } = null!;
+    public EnterpriseRole Role { get; set; } 
 }

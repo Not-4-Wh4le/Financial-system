@@ -24,7 +24,7 @@ public class EnterpriseRepository : GenericRepository<Enterprise>, IEnterpriseRe
         if (enterprise == null) throw new Exception("Enterprise not found");
 
         var employees = await _context.Users
-            .Where(u => employeeIds.Contains(u.ID))
+            .Where(u => employeeIds.Contains(u.Id))
             .ToListAsync();
 
         foreach (var employee in employees)
@@ -57,4 +57,28 @@ public class EnterpriseRepository : GenericRepository<Enterprise>, IEnterpriseRe
             await _context.SaveChangesAsync();
         }
     }
+    public async Task<List<User>> GetEnterpriseEmployeesAsync(int enterpriseId)
+    {
+        return await _context.EmployeeEnterprises
+            .Where(ee => ee.EnterpriseId == enterpriseId)
+            .Include(ee => ee.User) 
+            .ThenInclude(u => u.Accounts) 
+            .Select(ee => ee.User)
+            .ToListAsync();
+    }
+
+    public Task<Enterprise?> GetByIdWithEmployeesAsync(int id)
+    {
+        throw new NotImplementedException();
+    }
+    
+    public async Task<EnterpriseAccount?> GetMainEnterpriseAccountAsync(int enterpriseId)
+    {
+        return await _context.Enterprises
+            .Where(e => e.Id == enterpriseId)
+            .SelectMany(e => e.Accounts)
+            .OfType<EnterpriseAccount>()
+            .FirstOrDefaultAsync(a => a.IsMainAccount);
+    }
+    
 }

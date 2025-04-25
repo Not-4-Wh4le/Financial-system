@@ -30,4 +30,24 @@ public class UserRepository : GenericRepository<User>, IUserRepository
             .Select(ee => ee.User)
             .ToListAsync();
     }
+    
+    public async Task<List<User>> SearchUsersAsync(string searchTerm)
+    {
+        if (string.IsNullOrWhiteSpace(searchTerm))
+        {
+            return await _context.Users.ToListAsync();
+        }
+
+        var formattedSearchTerm = $"%{searchTerm.Trim()}%";
+
+        var query = _context.Users
+            .Where(u =>
+                EF.Functions.Like(u.Name, formattedSearchTerm) ||
+                EF.Functions.Like(u.Email, formattedSearchTerm) ||
+                EF.Functions.Like(u.PassportNumber, formattedSearchTerm) ||
+                EF.Functions.Like(u.PhoneNumber, formattedSearchTerm) ||
+                EF.Functions.Like(u.IdentificationNumber, formattedSearchTerm));
+
+        return await query.ToListAsync();
+    }
 }

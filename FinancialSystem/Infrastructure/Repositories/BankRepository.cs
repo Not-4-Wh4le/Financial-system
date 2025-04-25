@@ -13,20 +13,33 @@ public class BankRepository : GenericRepository<Bank>, IBankRepository
     public async Task<List<IBankClient>> GetClientsByBankAsync(int bankId)
     {
         var bank = await _context.Banks
-            .Include(b => b.Clients)
             .FirstOrDefaultAsync(b => b.Id == bankId);
+        var users = _context.Entry(bank)
+            .Collection("Users")
+            .Query()
+            .Cast<IBankClient>()
+            .ToList();
 
+        var enterprises = _context.Entry(bank)
+            .Collection("Enterprises")
+            .Query()
+            .Cast<IBankClient>()
+            .ToList();
         return bank?.Clients.ToList() ?? new List<IBankClient>();
     }
 
-    public async Task AddClientToBankAsync(int bankId, IBankClient client)
+    public async Task AddClientToBankAsync(int bankId, int clientId)
     {
-        var bank = await _context.Banks.FindAsync(bankId);
-        if (bank != null)
-        {
-            bank.Clients.Add(client);
-            await _context.SaveChangesAsync();
-        }
+        await _context.Database.ExecuteSqlRawAsync(
+            "INSERT INTO BankUsers (BankId, UserId) VALUES ({0}, {1})",
+            bankId, clientId);
+    }
+    
+    public async Task AddEnterpriseToBankAsync(int bankId, int enterpriseId)
+    {
+        await _context.Database.ExecuteSqlRawAsync(
+            "INSERT INTO BankEnterprises (BankId, EnterpriseId) VALUES ({0}, {1})",
+            bankId, enterpriseId);
     }
 
     public async Task RemoveClientFromBankAsync(int bankId, int clientId)
@@ -42,6 +55,9 @@ public class BankRepository : GenericRepository<Bank>, IBankRepository
             }
             
         }
-        
+    }
+    public async Task<Bank?> GetDefaultBankAsync()
+    {
+        return await _context.Banks.FirstOrDefaultAsync(); 
     }
 }

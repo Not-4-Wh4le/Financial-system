@@ -12,7 +12,7 @@ public class LoanRepository : GenericRepository<Loan>, ILoanRepository
     public async Task<List<Loan>> GetLoansByClientAsync(int clientId)
     {
         return await _context.Loans
-            .Where(l => l.Client.Id == clientId)
+            .Where(l => l.User.Id == clientId)
             .ToListAsync();
     }
 

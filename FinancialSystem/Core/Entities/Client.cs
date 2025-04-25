@@ -2,18 +2,14 @@
 
 namespace FinancialSystem.Core.Entities;
 
-public class Client : User, IBankClient
+public class Client :  IBankClient
 {
-    public int Id 
-    { 
-        get => this.ID; 
-        set => this.ID = value; 
-    }
-    
+    public int Id { get; set; }
+    public User User { get; set; } = null!;
+
     public string Name
-    { 
-        get => this.FullName; 
-        set => this.FullName = value; 
+    {
+        get => User.Name;
+        set => User.Name = value;
     }
-    public List<Bank> Banks { get; set; } = new();
 }
