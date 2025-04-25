@@ -1,32 +1,36 @@
-﻿using FinancialSystem.Infrastructure.Data;
-
-namespace FinancialSystem.Application;
-
-using FinancialSystem.Core.Entities;
+﻿using FinancialSystem.Core.Entities;
 using FinancialSystem.Core.Enums;
-using Microsoft.EntityFrameworkCore;
+using FinancialSystem.Core.Interfaces.Services;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
+using FinancialSystem.Core.Interfaces.Servicec;
 
 public class EnterpriseMenu
 {
-    private readonly AppDbContext _context;
-    private readonly BankMenu _bankMenu;
+    private readonly IEnterpriseService _enterpriseService;
+    private readonly IBankService _bankService;
+    private readonly IUserService _userService;
+    private readonly IAccountService _accountService;
 
-    public EnterpriseMenu(AppDbContext context, BankMenu bankMenu)
+    public EnterpriseMenu(
+        IEnterpriseService enterpriseService,
+        IBankService bankService,
+        IUserService userService,
+        IAccountService accountService)
     {
-        _context = context;
-        _bankMenu = bankMenu;
+        _enterpriseService = enterpriseService;
+        _bankService = bankService;
+        _userService = userService;
+        _accountService = accountService;
     }
 
-    public async Task ShowAsync()
+    public async Task ShowAsync(User currentUser)
     {
         while (true)
         {
             Console.Clear();
             Console.WriteLine("=== Управление предприятиями ===");
-            Console.WriteLine("1. Создать предприятие");
+            Console.WriteLine("1. Зарегистрировать предприятие");
             Console.WriteLine("2. Список предприятий");
             Console.WriteLine("3. Добавить сотрудника");
             Console.WriteLine("4. Создать зарплатный проект");
@@ -35,34 +39,42 @@ public class EnterpriseMenu
             Console.Write("Выберите действие: ");
 
             var choice = Console.ReadLine();
-            switch (choice)
+            try
             {
-                case "1":
-                    await CreateEnterpriseAsync();
-                    break;
-                case "2":
-                    await ListEnterprisesAsync();
-                    break;
-                case "3":
-                    await AddEmployeeAsync();
-                    break;
-                case "4":
-                    await CreateSalaryProjectAsync();
-                    break;
-                case "5":
-                    await ShowEnterpriseAccountsAsync();
-                    break;
-                case "0":
-                    return;
-                default:
-                    Console.WriteLine("Неверный выбор!");
-                    Console.ReadKey();
-                    break;
+                switch (choice)
+                {
+                    case "1":
+                        await RegisterEnterpriseAsync(currentUser);
+                        break;
+                    case "2":
+                        await ListEnterprisesAsync(currentUser);
+                        break;
+                    case "3":
+                        await AddEmployeeAsync(currentUser);
+                        break;
+                    case "4":
+                        await CreateSalaryProjectAsync(currentUser);
+                        break;
+                    case "5":
+                        await ShowEnterpriseAccountsAsync(currentUser);
+                        break;
+                    case "0":
+                        return;
+                    default:
+                        Console.WriteLine("Неверный выбор!");
+                        break;
+                }
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка: {ex.Message}");
+            }
+            Console.WriteLine("Нажмите любую клавишу для продолжения...");
+            Console.ReadKey();
         }
     }
 
-    private async Task CreateEnterpriseAsync()
+    private async Task RegisterEnterpriseAsync(User executor)
     {
         Console.Write("Юридическое название: ");
         var legalName = Console.ReadLine();
@@ -70,139 +82,107 @@ public class EnterpriseMenu
         Console.Write("УНП: ");
         var unp = Console.ReadLine();
 
-        Console.Write("Юридический адрес: ");
-        var address = Console.ReadLine();
+        // Показываем список банков
+        var banks = await _bankService.GetAllBanksAsync(executor);
+        Console.WriteLine("Доступные банки:");
+        foreach (var bank in banks)
+        {
+            Console.WriteLine($"{bank.Id}. {bank.Name} ({bank.Bic})");
+        }
 
-        Console.WriteLine("Выберите тип предприятия:");
-        Console.WriteLine("1. ИП\n2. ООО\n3. ЗАО\n4. Государственное\n5. Другое");
-        var typeChoice = int.Parse(Console.ReadLine());
-        var type = (EnterpriseType)(typeChoice - 1);
-
-        // Выбор банка
-       // await _bankMenu.ListBanksAsync();
         Console.Write("ID банка: ");
         var bankId = int.Parse(Console.ReadLine());
-        var bank = await _context.Banks.FindAsync(bankId);
 
-        var enterprise = new Enterprise
-        {
-            LegalName = legalName,
-            UNP = unp,
-            LegalAddress = address,
-            Type = type,
-            Bank = bank
-        };
+        var enterprise = await _enterpriseService.RegisterEnterpriseAsync(
+            executor,
+            legalName,
+            unp,
+            bankId);
 
-        _context.Enterprises.Add(enterprise);
-        await _context.SaveChangesAsync();
-
-        Console.WriteLine($"Предприятие {legalName} создано!");
-        Console.ReadKey();
+        Console.WriteLine($"Предприятие {enterprise.LegalName} зарегистрировано!");
     }
 
-    private async Task ListEnterprisesAsync()
+    private async Task ListEnterprisesAsync(User executor)
     {
-        var enterprises = await _context.Enterprises
-            .Include(e => e.Bank)
-            .ToListAsync();
-
+        var enterprises = await _enterpriseService.GetAllEnterprisesAsync(executor);
+        
         Console.WriteLine("Список предприятий:");
-        Console.WriteLine("ID\tНазвание\tТип\tБИК банка");
+        Console.WriteLine("ID\tНазвание\tУНП\tБИК банка");
         foreach (var e in enterprises)
         {
-            Console.WriteLine($"{e.Id}\t{e.LegalName}\t{e.Type}\t{e.Bank?.Bic}");
+            Console.WriteLine($"{e.Id}\t{e.LegalName}\t{e.UNP}\t{e.Bank.Bic}");
         }
-        Console.WriteLine("\nНажмите любую клавишу для продолжения...");
-        Console.ReadKey();
     }
 
-    private async Task AddEmployeeAsync()
+    private async Task AddEmployeeAsync(User executor)
     {
-        await ListEnterprisesAsync();
+        var enterprises = await _enterpriseService.GetAllEnterprisesAsync(executor);
+        Console.WriteLine("Доступные предприятия:");
+        foreach (var e in enterprises)
+        {
+            Console.WriteLine($"{e.Id}. {e.LegalName}");
+        }
+
         Console.Write("ID предприятия: ");
         var enterpriseId = int.Parse(Console.ReadLine());
 
-        var users = await _context.Users.ToListAsync();
+        var users = await _userService.SearchUsersAsync(executor, "");
         Console.WriteLine("Доступные пользователи:");
         foreach (var u in users)
         {
-            Console.WriteLine($"{u.Id}\t{u.Name}\t{u.Email}");
+            Console.WriteLine($"{u.Id}. {u.Name} ({u.Email})");
         }
 
         Console.Write("ID пользователя: ");
         var userId = int.Parse(Console.ReadLine());
 
-        Console.WriteLine("Выберите роль сотрудника:");
+        Console.WriteLine("Выберите роль:");
         Console.WriteLine("1. Сотрудник\n2. Специалист\n3. Бухгалтер");
-        var roleChoice = int.Parse(Console.ReadLine());
-        var role = (EnterpriseRole)(roleChoice - 1);
+        var role = (EnterpriseRole)(int.Parse(Console.ReadLine()) - 1);
 
-        var employee = new EmployeeEnterprise
-        {
-            EnterpriseId = enterpriseId,
-            UserId = userId,
-            Role = role
-        };
+        await _enterpriseService.AddEmployeeAsync(
+            executor,
+            enterpriseId,
+            userId,
+            role);
 
-        _context.EmployeeEnterprises.Add(employee);
-        await _context.SaveChangesAsync();
-
-        Console.WriteLine("Сотрудник добавлен!");
-        Console.ReadKey();
+        Console.WriteLine("Сотрудник успешно добавлен!");
     }
 
-    private async Task CreateSalaryProjectAsync()
+    private async Task CreateSalaryProjectAsync(User executor)
     {
-        await ListEnterprisesAsync();
+        var enterprises = await _enterpriseService.GetAllEnterprisesAsync(executor);
+        Console.WriteLine("Доступные предприятия:");
+        foreach (var e in enterprises)
+        {
+            Console.WriteLine($"{e.Id}. {e.LegalName}");
+        }
+
         Console.Write("ID предприятия: ");
         var enterpriseId = int.Parse(Console.ReadLine());
 
-        var enterprise = await _context.Enterprises
-            .Include(e => e.Employees)
-            .ThenInclude(ee => ee.User)
-            .FirstOrDefaultAsync(e => e.Id == enterpriseId);
-
-        if (enterprise == null)
-        {
-            Console.WriteLine("Предприятие не найдено!");
-            Console.ReadKey();
-            return;
-        }
-
-        foreach (var employee in enterprise.Employees)
-        {
-            var account = new UserAccount
-            {
-                Owner = employee.User,
-                Bank = enterprise.Bank,
-                AccountType = AccountType.Salary,
-                Balance = 0
-            };
-            _context.Accounts.Add(account);
-        }
-
-        await _context.SaveChangesAsync();
-        Console.WriteLine($"Зарплатный проект создан для {enterprise.LegalName}!");
-        Console.ReadKey();
+        await _enterpriseService.CreateSalaryProjectAsync(executor, enterpriseId);
+        Console.WriteLine("Зарплатный проект успешно создан!");
     }
 
-    private async Task ShowEnterpriseAccountsAsync()
+    private async Task ShowEnterpriseAccountsAsync(User executor)
     {
-        await ListEnterprisesAsync();
+        var enterprises = await _enterpriseService.GetAllEnterprisesAsync(executor);
+        Console.WriteLine("Доступные предприятия:");
+        foreach (var e in enterprises)
+        {
+            Console.WriteLine($"{e.Id}. {e.LegalName}");
+        }
+
         Console.Write("ID предприятия: ");
         var enterpriseId = int.Parse(Console.ReadLine());
 
-        var accounts = await _context.Accounts
-            .OfType<EnterpriseAccount>()
-            .Where(a => a.EnterpriseOwner.Id == enterpriseId)
-            .ToListAsync();
-
-        Console.WriteLine("Счета предприятия:");
+        //var accounts = await _enterpriseService.GetEnterpriseAccountsAsync(enterpriseId);
+        
+        Console.WriteLine("Счета предприятия:");/*
         foreach (var acc in accounts)
         {
-            Console.WriteLine($"{acc.Id}\t{acc.Balance}\t{(acc.IsMainAccount ? "Основной" : "Дополнительный")}");
-        }
-        Console.WriteLine("\nНажмите любую клавишу для продолжения...");
-        Console.ReadKey();
+            Console.WriteLine($"{acc.Id}: {acc.Balance} {acc.GetType().Name}");
+        }*/
     }
 }

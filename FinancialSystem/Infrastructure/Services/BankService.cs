@@ -72,4 +72,11 @@ public class BankService : IBankService
     {
         throw new NotImplementedException();
     }
+
+    public Task<List<Bank>> GetAllBanksAsync(User executor)
+    {
+        if (!_authorizationService.CheckPermission(executor, Permission.ViewStatistics))
+            throw new UnauthorizedAccessException("Недостаточно прав для регистрации клиента");
+        return _bankRepository.GetAllAsync();
+    }
 }

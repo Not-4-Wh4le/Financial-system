@@ -8,4 +8,5 @@ public interface IBankService
     Task RegisterEnterpriseAsync(User user, Enterprise enterprise);
     Task<Bank> GetBankInfoAsync(int bankId);
     Task AssignAccountToBankAsync(int bankId, int accountId);
+    Task<List<Bank>> GetAllBanksAsync(User executor);
 }

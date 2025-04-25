@@ -11,14 +11,14 @@ public class EnterpriseService : IEnterpriseService
     private readonly IEnterpriseRepository _enterpriseRepo;
     private readonly IUserRepository _userRepo;
     private readonly IAccountRepository _accountRepo;
-    private readonly IAuthorizationService _authService;
+    private readonly AuthorizationService _authService;
     private readonly IBankRepository _bankRepo;
 
     public EnterpriseService(
         IEnterpriseRepository enterpriseRepo,
         IUserRepository userRepo,
         IAccountRepository accountRepo,
-        IAuthorizationService authService,
+        AuthorizationService authService,
         IBankRepository bankRepo)
     {
         _enterpriseRepo = enterpriseRepo;
@@ -87,6 +87,13 @@ public class EnterpriseService : IEnterpriseService
             };
             await _accountRepo.AddAsync(salaryAccount);
         }
+    }
+
+    public Task<List<Enterprise>> GetAllEnterprisesAsync(User executor)
+    {
+        if (!_authService.CheckPermission(executor, Permission.ManageEnterprises))
+            throw new UnauthorizedAccessException();
+        return _enterpriseRepo.GetAllAsync();
     }
 
     public async Task PaySalariesAsync(User executor, int enterpriseId, Dictionary<int, decimal> payments)
