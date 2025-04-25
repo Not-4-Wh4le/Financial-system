@@ -65,11 +65,10 @@ public class AppDbContext : DbContext
             entity.Property(b => b.Name).IsRequired().HasMaxLength(100);
             entity.Property(b => b.Bic).IsRequired().HasMaxLength(20);
             entity.HasIndex(b => b.Bic).IsUnique();
-           
-            // Настройка для Clients (IBankClient)
-            // Создаем две отдельные связи для User и Enterprise
-            entity.HasMany<User>("ClientUsers")
-                .WithMany()
+    
+            // Связь с User (физические лица)
+            entity.HasMany(b => b.ClientUsers)
+                .WithMany(u => u.Banks)
                 .UsingEntity<Dictionary<string, object>>(
                     "BankUsers",
                     j => j.HasOne<User>().WithMany().HasForeignKey("UserId"),
@@ -77,13 +76,9 @@ public class AppDbContext : DbContext
                     j => j.ToTable("BankUsers"));
 
             // Связь с Enterprise (юридические лица)
-            entity.HasMany<Enterprise>("ClientEnterprises")
-                .WithMany()
-                .UsingEntity<Dictionary<string, object>>(
-                    "BankEnterprises",
-                    j => j.HasOne<Enterprise>().WithMany().HasForeignKey("EnterpriseId"),
-                    j => j.HasOne<Bank>().WithMany().HasForeignKey("BankId"),
-                    j => j.ToTable("BankEnterprises"));
+            entity.HasMany(b => b.ClientEnterprises)
+                .WithOne(e => e.Bank)
+                .HasForeignKey(e => e.BankId);
         });
 
         // Конфигурация Transaction
@@ -140,19 +135,19 @@ public class AppDbContext : DbContext
                     Id = 1,
                     Name = "Альфа-Банк", 
                     Bic = "ALFABY2X",
-                    Clients = new List<IBankClient>(),
+                    //Clients = new List<IBankClient>(),
                 },
                 new Bank { 
                     Id = 2,
                     Name = "Беларусбанк", 
                     Bic = "BELBBY2X",
-                    Clients = new List<IBankClient>(),
+                   // Clients = new List<IBankClient>(),
                 },
                 new Bank { 
                     Id = 3,
                     Name = "Приорбанк", 
                     Bic = "PJCBBY2X",
-                    Clients = new List<IBankClient>(),
+                    //Clients = new List<IBankClient>(),
                 }
             };
             await Banks.AddRangeAsync(banks);
@@ -169,7 +164,8 @@ public class AppDbContext : DbContext
                     Email = "admin@bank.com",
                     Role = UserRole.Administrator,
                     PassportNumber = "AB1234567",
-                    IdentificationNumber = "12345678901234"
+                    IdentificationNumber = "12345678901234",
+                    PasswordHash = "123"
                 },
                 new User { 
                     Id = 2,
@@ -177,7 +173,8 @@ public class AppDbContext : DbContext
                     Email = "manager@bank.com",
                     Role = UserRole.Manager,
                     PassportNumber = "AB7654321",
-                    IdentificationNumber = "98765432109876"
+                    IdentificationNumber = "98765432109876",
+                    PasswordHash = "123"
                 }
             };
             await Users.AddRangeAsync(users);

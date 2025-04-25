@@ -45,6 +45,7 @@ class Program
         services.AddScoped<IAccountRepository, AccountRepository>();
     
         // Регистрация сервисов
+        services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IEnterpriseService, EnterpriseService>();
         services.AddScoped<IBankService, BankService>();
         services.AddScoped<IUserService, UserService>();
@@ -52,7 +53,7 @@ class Program
         services.AddScoped<IAuthorizationService, AuthorizationService>();
         services.AddScoped<ITransactionService, TransactionService>();
         services.AddScoped<ILoanService,LoanService>();
-        services.AddScoped<IAuthService, AuthService>();
+       
         
         
         services.AddScoped<MainMenu>();

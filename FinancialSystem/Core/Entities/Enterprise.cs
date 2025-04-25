@@ -12,6 +12,7 @@ public class Enterprise : IBankClient
     public EnterpriseType Type { get; set; }
     public string UNP { get; set; } = string.Empty;
     public string BIC { get; set; } = string.Empty;
+    public int BankId { get; set; }
     public Bank Bank { get; set; } = null!;
     public List<EmployeeEnterprise> Employees { get; set; } = new();
     public List<AccountBase> Accounts { get; set; } = new();

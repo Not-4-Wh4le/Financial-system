@@ -1,13 +1,14 @@
 ﻿using FinancialSystem.Application;
+using FinancialSystem.Core.Interfaces.Services;
 using FinancialSystem.Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 public class MainMenu
 {
     private readonly IServiceProvider _serviceProvider;
-    private readonly AuthService _authService;
+    private readonly IAuthService _authService;
 
-    public MainMenu(IServiceProvider serviceProvider, AuthService authService)
+    public MainMenu(IServiceProvider serviceProvider, IAuthService authService)
     {
         _serviceProvider = serviceProvider;
         _authService = authService;

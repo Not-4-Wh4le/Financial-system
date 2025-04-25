@@ -9,7 +9,6 @@ namespace FinancialSystem.Core.Entities;
         public string Bic { get; set; } = string.Empty;
         public List<User> ClientUsers { get; set; } = new();
     
-        // Навигационные свойства для предприятий (юридических лиц)
         public List<Enterprise> ClientEnterprises { get; set; } = new();
         
         public List<IBankClient> Clients => ClientUsers.Cast<IBankClient>().Concat(ClientEnterprises).ToList();

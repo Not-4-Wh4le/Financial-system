@@ -13,49 +13,61 @@ public class BankRepository : GenericRepository<Bank>, IBankRepository
     public async Task<List<IBankClient>> GetClientsByBankAsync(int bankId)
     {
         var bank = await _context.Banks
+            .Include(b => b.ClientUsers)
+            .Include(b => b.ClientEnterprises)
             .FirstOrDefaultAsync(b => b.Id == bankId);
-        var users = _context.Entry(bank)
-            .Collection("Users")
-            .Query()
-            .Cast<IBankClient>()
-            .ToList();
 
-        var enterprises = _context.Entry(bank)
-            .Collection("Enterprises")
-            .Query()
-            .Cast<IBankClient>()
-            .ToList();
-        return bank?.Clients.ToList() ?? new List<IBankClient>();
+        if (bank == null)
+            return new List<IBankClient>();
+
+        var clients = bank.ClientUsers.Cast<IBankClient>()
+                          .Concat(bank.ClientEnterprises)
+                          .ToList();
+
+        return clients;
     }
 
     public async Task AddClientToBankAsync(int bankId, int clientId)
     {
-        await _context.Database.ExecuteSqlRawAsync(
-            "INSERT INTO BankUsers (BankId, UserId) VALUES ({0}, {1})",
-            bankId, clientId);
+        var bank = await _context.Banks.FindAsync(bankId);
+        var user = await _context.Users.FindAsync(clientId);
+
+        if (bank != null && user != null)
+        {
+            bank.ClientUsers.Add(user);
+            await _context.SaveChangesAsync();
+        }
     }
     
     public async Task AddEnterpriseToBankAsync(int bankId, int enterpriseId)
     {
-        await _context.Database.ExecuteSqlRawAsync(
-            "INSERT INTO BankEnterprises (BankId, EnterpriseId) VALUES ({0}, {1})",
-            bankId, enterpriseId);
+        var bank = await _context.Banks.FindAsync(bankId);
+        var enterprise = await _context.Enterprises.FindAsync(enterpriseId);
+
+        if (bank != null && enterprise != null)
+        {
+            bank.ClientEnterprises.Add(enterprise);
+            await _context.SaveChangesAsync();
+        }
     }
 
     public async Task RemoveClientFromBankAsync(int bankId, int clientId)
     {
-        var bank = await _context.Banks.FindAsync(bankId);
+        var bank = await _context.Banks
+            .Include(b => b.ClientUsers)
+            .FirstOrDefaultAsync(b => b.Id == bankId);
+
         if (bank != null)
         {
-            var client = bank.Clients.FirstOrDefault(c => c.Id == clientId);
-            if (client != null)
+            var user = bank.ClientUsers.FirstOrDefault(u => u.Id == clientId);
+            if (user != null)
             {
-                bank.Clients.Remove(client);
+                bank.ClientUsers.Remove(user);
                 await _context.SaveChangesAsync();
             }
-            
         }
     }
+
     public async Task<Bank?> GetDefaultBankAsync()
     {
         return await _context.Banks.FirstOrDefaultAsync(); 
