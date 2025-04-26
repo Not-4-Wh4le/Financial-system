@@ -9,4 +9,5 @@ public interface IUserService
     Task<User?> GetUserByIdAsync(User executor, int userId);
     Task DeleteUserAsync(User executor, int userId);
     Task<List<User>> SearchUsersAsync(User executor, string searchTerm);
+    Task<List<User>> GetAllUserAsync(User executor);
 }

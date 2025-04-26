@@ -72,4 +72,11 @@ public class BankRepository : GenericRepository<Bank>, IBankRepository
     {
         return await _context.Banks.FirstOrDefaultAsync(); 
     }
+    public async Task<Bank?> GetByIdWithClientsAsync(int bankId)
+    {
+        return await _context.Banks
+            .Include(b => b.ClientUsers)
+            .Include(b => b.ClientEnterprises)
+            .FirstOrDefaultAsync(b => b.Id == bankId);
+    }
 }

@@ -90,4 +90,11 @@ namespace FinancialSystem.Infrastructure.Services;
 
             return await _userRepository.SearchUsersAsync(searchTerm);
         }
+
+        public Task<List<User>> GetAllUserAsync(User executor)
+        {
+            if (!_authorizationService.CheckPermission(executor, Permission.ManageClients))
+                throw new UnauthorizedAccessException("Недостаточно прав для просмотра пользователей");
+            return _userRepository.GetAllAsync();
+        }
     }

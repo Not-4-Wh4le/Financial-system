@@ -10,14 +10,14 @@ namespace FinancialSystem.Infrastructure.Services;
         private readonly IUserRepository _userRepo;
         private readonly IBankRepository _bankRepo;
         private readonly IAccountRepository _accountRepo;
-        private readonly AuthorizationService _authService;
+        private readonly IAuthorizationService _authService;
         private readonly ILoanRepository _loanRepo;
 
         public ClientService(
             IUserRepository userRepo,
             IBankRepository bankRepo,
             IAccountRepository accountRepo,
-            AuthorizationService authService,
+            IAuthorizationService authService,
             ILoanRepository loanRepo)
         {
             _userRepo = userRepo;

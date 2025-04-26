@@ -46,7 +46,8 @@ public class AccountService : IAccountService
             null, 
             accountId, 
             amount, 
-            TransactionType.Deposit);
+            TransactionType.Deposit,
+            "Создание депозита");
     }
 
     public async Task WithdrawAsync(User user, int accountId, decimal amount)
@@ -70,7 +71,8 @@ public class AccountService : IAccountService
             accountId, 
             null, 
             amount, 
-            TransactionType.Withdrawal);
+            TransactionType.Withdrawal,
+            "Снятие средств");
     }
 
     public async Task TransferAsync(User user, int fromAccountId, int toAccountId, decimal amount)
@@ -98,7 +100,8 @@ public class AccountService : IAccountService
             fromAccountId, 
             toAccountId, 
             amount, 
-            TransactionType.Transfer);
+            TransactionType.Transfer,
+            "Перевод средств");
     }
 
     public async Task FreezeAccountAsync(User user, int accountId)
@@ -119,5 +122,45 @@ public class AccountService : IAccountService
         var account = await _accountRepository.GetByIdAsync(accountId);
         account.IsFrozen = false;
         await _accountRepository.UpdateAsync(account);
+    }
+    public async Task<AccountBase> CreateAccountAsync(User executor, AccountBase account)
+    {
+        // Проверка прав
+        if (!_authorizationService.CheckPermission(executor, Permission.ManageOwnAccounts))
+            throw new UnauthorizedAccessException("Недостаточно прав для создания счета");
+
+        if (account is UserAccount userAccount)
+        {
+            // Для личного счета проверяем, что владелец - текущий пользователь
+            if (userAccount.Owner?.Id != executor.Id && 
+                !_authorizationService.CheckPermission(executor, Permission.ManageClients))
+            {
+                throw new UnauthorizedAccessException("Недостаточно прав для создания счета другому пользователю");
+            }
+        }
+        else if (account is EnterpriseAccount enterpriseAccount)
+        {
+            // Для корпоративного счета проверяем права на предприятие
+            if (!_authorizationService.CheckPermission(executor, Permission.ManageEnterprises))
+                throw new UnauthorizedAccessException("Недостаточно прав для создания корпоративного счета");
+        }
+
+        // Устанавливаем начальный баланс (если не установлен)
+        account.Balance = account.Balance < 0 ? 0 : account.Balance;
+        account.IsFrozen = false;
+
+        // Сохраняем счет
+        await _accountRepository.AddAsync(account);
+    
+        // Логируем создание счета
+        await _transactionService.LogTransactionAsync(
+            executor,
+            null,
+            account.Id,
+            account.Balance,
+            TransactionType.Deposit,
+            $"Создан счет {account.Id}");
+
+        return account;
     }
 }

@@ -9,5 +9,6 @@ public interface IBankRepository : IRepository<Bank>
     Task RemoveClientFromBankAsync(int bankId, int clientId);
     Task<Bank?> GetDefaultBankAsync();
     Task AddEnterpriseToBankAsync(int bankId, int enterpriseId);
+    Task<Bank?> GetByIdWithClientsAsync(int bankId);
 
 }

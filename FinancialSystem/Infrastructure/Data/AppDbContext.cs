@@ -175,6 +175,15 @@ public class AppDbContext : DbContext
                     PassportNumber = "AB7654321",
                     IdentificationNumber = "98765432109876",
                     PasswordHash = "123"
+                },
+                new User { 
+                    Id = 3,
+                    Name = "Client",
+                    Email = "Client@bank.com",
+                    Role = UserRole.Client,
+                    PassportNumber = "AQ7654321",
+                    IdentificationNumber = "98765431209876",
+                    PasswordHash = "123"
                 }
             };
             await Users.AddRangeAsync(users);

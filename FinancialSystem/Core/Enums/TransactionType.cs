@@ -2,6 +2,7 @@
 
 public enum TransactionType
 {
+    System,
     Deposit,    // Внесение средств
     Withdrawal, // Снятие средств
     Transfer,   // Перевод между счетами

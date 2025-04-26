@@ -11,14 +11,14 @@ public class EnterpriseService : IEnterpriseService
     private readonly IEnterpriseRepository _enterpriseRepo;
     private readonly IUserRepository _userRepo;
     private readonly IAccountRepository _accountRepo;
-    private readonly AuthorizationService _authService;
+    private readonly IAuthorizationService _authService;
     private readonly IBankRepository _bankRepo;
 
     public EnterpriseService(
         IEnterpriseRepository enterpriseRepo,
         IUserRepository userRepo,
         IAccountRepository accountRepo,
-        AuthorizationService authService,
+        IAuthorizationService authService,
         IBankRepository bankRepo)
     {
         _enterpriseRepo = enterpriseRepo;

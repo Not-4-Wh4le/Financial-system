@@ -36,16 +36,16 @@ public class MainMenu
             switch (choice)
             {
                 case "1":
-                    //await _serviceProvider.GetRequiredService<UserMenu>().ShowAsync(currentUser);
+                    await _serviceProvider.GetRequiredService<UserMenu>().ShowAsync(currentUser);
                     break;
                 case "2":
-                    //await _serviceProvider.GetRequiredService<BankMenu>().ShowAsync(currentUser);
+                    await _serviceProvider.GetRequiredService<BankMenu>().ShowAsync(currentUser);
                     break;
                 case "3":
-                    //await _serviceProvider.GetRequiredService<EnterpriseMenu>().ShowAsync(currentUser);
+                    await _serviceProvider.GetRequiredService<EnterpriseMenu>().ShowAsync(currentUser);
                     break;
                 case "4":
-                   // await _serviceProvider.GetRequiredService<AccountMenu>().ShowAsync(currentUser);
+                    await _serviceProvider.GetRequiredService<AccountMenu>().ShowAsync(currentUser);
                     break;
                 case "0":
                     return;

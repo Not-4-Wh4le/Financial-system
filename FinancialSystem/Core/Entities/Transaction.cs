@@ -13,5 +13,6 @@ public class Transaction
     public decimal Amount { get; set; }
     public TransactionType Type { get; set; }
     public TransactionStatus Status { get; set; } = TransactionStatus.Pending;
+    public string Message { get; set; } = string.Empty;
 
 }

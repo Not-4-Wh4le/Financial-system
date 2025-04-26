@@ -5,8 +5,9 @@ namespace FinancialSystem.Core.Interfaces;
 
 public interface ITransactionService
 {
-    Task LogTransactionAsync(User user, int? fromAccountId, int? toAccountId, decimal amount, TransactionType type);
+    Task LogTransactionAsync(User user, int? fromAccountId, int? toAccountId, decimal amount, TransactionType type, string message);
     Task CancelTransactionAsync(User user, int transactionId);
     Task<List<Transaction>> GetAccountTransactionsAsync(int accountId);
     Task<List<Transaction>> GetLastTwoTransactionsAsync(int accountId);
+    
 }

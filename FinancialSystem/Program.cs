@@ -43,6 +43,9 @@ class Program
         services.AddScoped<IBankRepository, BankRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IAccountRepository, AccountRepository>();
+        services.AddScoped<ITransactionRepository, TransactionRepository>();
+        services.AddScoped<ILoanRepository, LoanRepository>();
+        
     
         // Регистрация сервисов
         services.AddScoped<IAuthService, AuthService>();

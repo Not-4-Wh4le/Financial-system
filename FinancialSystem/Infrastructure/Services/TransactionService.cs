@@ -25,7 +25,8 @@ public class TransactionService : ITransactionService
         _authorizationService = authorizationService;
     }
 
-    public async Task LogTransactionAsync(User user, int? fromAccountId, int? toAccountId, decimal amount, TransactionType type)
+    public async Task LogTransactionAsync(User user, int? fromAccountId, int? toAccountId, decimal amount, 
+        TransactionType type, string message = "log")
     {
         if (!_authorizationService.CheckPermission(user, Permission.ManageOwnAccounts))
             throw new UnauthorizedAccessException("Недостаточно прав для выполнения операции");
@@ -37,7 +38,8 @@ public class TransactionService : ITransactionService
             Amount = amount,
             Type = type,
             Date = DateTime.UtcNow,
-            Status = TransactionStatus.Completed
+            Status = TransactionStatus.Completed,
+            Message = message
         };
 
         await _transactionRepository.AddAsync(transaction);

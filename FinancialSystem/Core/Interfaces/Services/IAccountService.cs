@@ -10,4 +10,5 @@ public interface IAccountService
     Task TransferAsync(User user, int fromAccountId, int toAccountId, decimal amount);
     Task FreezeAccountAsync(User user, int accountId);
     Task UnfreezeAccountAsync(User user, int accountId);
+    Task<AccountBase> CreateAccountAsync(User executor, AccountBase account);
 }
